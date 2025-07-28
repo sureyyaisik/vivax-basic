@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vivax Group - Kıbrıs'ın Güvenilir Tedarik Ortağı</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the slider and other elements */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        .hero-slider-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        .hero-slide {
+            width: 100%;
+            height: 600px; /* Adjust height as needed */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            transition: opacity 0.7s ease-in-out;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .hero-slide.active {
+            opacity: 1;
+            position: relative; /* Active slide takes up space */
+        }
+        .slider-nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .slider-nav-button:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .prev-slide {
+            left: 1rem;
+        }
+        .next-slide {
+            right: 1rem;
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .dot.active {
+            background-color: white;
+        }
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .accordion-header:hover {
+            background-color: #f0f0f0;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.active {
+            max-height: 500px; /* Sufficiently large value for content */
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Specific styles for the dropdown menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: #334155; /* Slate-700 */
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0.5rem;
+            top: 100%; /* Position below the parent link */
+            left: 0;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            border-radius: 0.5rem;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #475569; /* Slate-600 */
+        }
+
+        /* Mobile menu specific styles */
+        #mobile-menu {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            background-color: #1e293b; /* Darker background for mobile menu */
+            padding: 1rem;
+            position: absolute;
+            top: 4rem; /* Below the header */
+            left: 0;
+            z-index: 20;
+        }
+
+        #mobile-menu a {
+            color: white;
+            padding: 0.75rem 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #mobile-menu a:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 767px) {
+            .hero-slide {
+                height: 400px; /* Adjust height for mobile */
+            }
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            .hero-content p {
+                font-size: 1rem;
+            }
+            .slider-nav-button {
+                padding: 0.75rem;
+                font-size: 1rem;
+            }
+            .dot {
+                width: 8px;
+                height: 8px;
+            }
+            .header-nav {
+                display: none; /* Hide desktop nav on mobile */
+            }
+            .hamburger-menu {
+                display: block; /* Show hamburger on mobile */
+            }
+            #mobile-menu.open {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header Section -->
+    <header class="bg-slate-800 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center flex-wrap">
+            <!-- Logo -->
+            <div class="text-2xl font-bold flex items-center">
+                <img src="https://placehold.co/40x40/000/FFF?text=V" alt="Vivax Group Logo" class="mr-2 rounded-full">
+                VIVAX GROUP
+            </div>
+
+            <!-- Phone Number for Desktop -->
+            <div class="hidden md:flex items-center space-x-4">
+                <i class="fas fa-phone-alt text-lg"></i>
+                <span class="text-lg">+90 0212 216 1234</span>
+            </div>
+
+            <!-- Hamburger Menu for Mobile -->
+            <button id="hamburger-button" class="md:hidden text-white text-2xl focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Navigation Menu for Desktop -->
+            <nav class="header-nav hidden md:flex space-x-6 text-lg font-medium">
+                <a href="#home" class="hover:text-amber-400 transition duration-300">ANASAYFA</a>
+                <a href="#about" class="hover:text-amber-400 transition duration-300">HAKKIMIZDA</a>
+                <a href="#services" class="hover:text-amber-400 transition duration-300">HİZMETLERİMİZ</a>
+                <div class="relative dropdown">
+                    <a href="#products" class="hover:text-amber-400 transition duration-300">ÜRÜNLERİMİZ <i class="fas fa-chevron-down text-sm ml-1"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="#products-food">Gıda Tedariği</a>
+                        <a href="#products-construction">İnşaat Malzemeleri</a>
+                        <a href="#products-hotel">Otel Ekipmanları</a>
+                        <a href="#products-other">Diğer Ürünler</a>
+                    </div>
+                </div>
+                <a href="#faq" class="hover:text-amber-400 transition duration-300">S.S.S.</a>
+                <a href="#contact" class="hover:text-amber-400 transition duration-300">İLETİŞİM</a>
+            </nav>
+        </div>
+
+        <!-- Mobile Navigation Menu (Hidden by default) -->
+        <nav id="mobile-menu" class="md:hidden flex-col items-center mt-4">
+            <a href="#home" class="block py-2 hover:text-amber-400 transition duration-300">ANASAYFA</a>
+            <a href="#about" class="block py-2 hover:text-amber-400 transition duration-300">HAKKIMIZDA</a>
+            <a href="#services" class="block py-2 hover:text-amber-400 transition duration-300">HİZMETLERİMİZ</a>
+            <a href="#products" class="block py-2 hover:text-amber-400 transition duration-300">ÜRÜNLERİMİZ</a>
+            <a href="#faq" class="block py-2 hover:text-amber-400 transition duration-300">S.S.S.</a>
+            <a href="#contact" class="block py-2 hover:text-amber-400 transition duration-300">İLETİŞİM</a>
+            <div class="flex items-center justify-center py-2 mt-2">
+                <i class="fas fa-phone-alt text-lg mr-2"></i>
+                <span class="text-lg">+90 0212 216 1234</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section with Slider -->
+    <section id="home" class="hero-slider-container relative w-full h-[600px] md:h-[700px] bg-gray-900 overflow-hidden">
+        <!-- Slides -->
+        <div class="hero-slide active" style="background-image: url('https://placehold.co/1920x700/334155/FFF?text=Vivax+Group+Depo');">
+            <div class="hero-content text-white p-8 bg-black bg-opacity-50 rounded-lg max-w-3xl mx-auto">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">Kıbrıs'ın Güvenilir Tedarik Ortağı</h1>
+                <p class="text-lg md:text-xl mb-6">Profesyonel tedarik çözümlerimizle Kıbrıs genelinde işletmelere hızlı, güvenilir ve kapsamlı hizmet sunuyoruz.</p>
+                <a href="#services" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300">Hemen Keşfet</a>
+            </div>
+        </div>
+        <div class="hero-slide" style="background-image: url('https://placehold.co/1920x700/475569/FFF?text=Gıda+Tedariği');">
+            <div class="hero-content text-white p-8 bg-black bg-opacity-50 rounded-lg max-w-3xl mx-auto">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">Taze ve Güvenilir Gıda Tedariği</h1>
+                <p class="text-lg md:text-xl mb-6">İşletmenizin tüm gıda ihtiyaçlarını en yüksek kalite standartlarında karşılıyoruz.</p>
+                <a href="#products-food" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300">Ürünleri İncele</a>
+            </div>
+        </div>
+        <div class="hero-slide" style="background-image: url('https://placehold.co/1920x700/64748b/FFF?text=İnşaat+Malzemeleri');">
+            <div class="hero-content text-white p-8 bg-black bg-opacity-50 rounded-lg max-w-3xl mx-auto">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">Sağlam ve Kaliteli İnşaat Malzemeleri</h1>
+                <p class="text-lg md:text-xl mb-6">Projeniz için gerekli tüm inşaat malzemelerini zamanında ve eksiksiz sağlıyoruz.</p>
+                <a href="#products-construction" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300">Ürünleri İncele</a>
+            </div>
+        </div>
+
+        <!-- Slider Navigation Buttons -->
+        <button class="slider-nav-button prev-slide"><i class="fas fa-chevron-left"></i></button>
+        <button class="slider-nav-button next-slide"><i class="fas fa-chevron-right"></i></button>
+
+        <!-- Slider Dots -->
+        <div class="slider-dots"></div>
+    </section>
+
+    <!-- Services Section (Hizmet Alanlarımız) -->
+    <section id="services" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-extrabold text-center text-gray-900 mb-12">HİZMET ALANLARIMIZ</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Service Card 1: Gıda Tedariği -->
+                <div class="bg-white rounded-lg shadow-xl p-8 text-center transform hover:scale-105 transition duration-300 border-t-4 border-amber-500">
+                    <div class="text-amber-500 text-6xl mb-6">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">GIDA TEDARİĞİ</h3>
+                    <p class="text-gray-600">Taze ve güvenilir gıda ürünleri ile işletmenizin mutfak ihtiyaçlarını karşılıyoruz.</p>
+                    <a href="#products-food" class="mt-6 inline-block text-amber-500 hover:text-amber-600 font-medium">İncele <i class="fas fa-arrow-right ml-2"></i></a>
+                </div>
+
+                <!-- Service Card 2: İnşaat Malzemeleri -->
+                <div class="bg-white rounded-lg shadow-xl p-8 text-center transform hover:scale-105 transition duration-300 border-t-4 border-amber-500">
+                    <div class="text-amber-500 text-6xl mb-6">
+                        <i class="fas fa-hard-hat"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">İNŞAAT MALZEMELERİ</h3>
+                    <p class="text-gray-600">Sağlam ve kaliteli inşaat malzemeleri ile projelerinize değer katıyoruz.</p>
+                    <a href="#products-construction" class="mt-6 inline-block text-amber-500 hover:text-amber-600 font-medium">İncele <i class="fas fa-arrow-right ml-2"></i></a>
+                </div>
+
+                <!-- Service Card 3: Otel Ekipmanları -->
+                <div class="bg-white rounded-lg shadow-xl p-8 text-center transform hover:scale-105 transition duration-300 border-t-4 border-amber-500">
+                    <div class="text-amber-500 text-6xl mb-6">
+                        <i class="fas fa-hotel"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">OTEL EKİPMANLARI</h3>
+                    <p class="text-gray-600">Profesyonel otel çözümleri ile konaklama sektörüne özel ekipmanlar sunuyoruz.</p>
+                    <a href="#products-hotel" class="mt-6 inline-block text-amber-500 hover:text-amber-600 font-medium">İncele <i class="fas fa-arrow-right ml-2"></i></a>
+                </div>
+
+                <!-- Service Card 4: Askeri Kantin Çözümleri -->
+                <div class="bg-white rounded-lg shadow-xl p-8 text-center transform hover:scale-105 transition duration-300 border-t-4 border-amber-500">
+                    <div class="text-amber-500 text-6xl mb-6">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">ASKERİ KANTİN ÇÖZÜMLERİ</h3>
+                    <p class="text-gray-600">Kesintisiz askeri tedarik hizmetleri ile kantin ihtiyaçlarını karşılıyoruz.</p>
+                    <a href="#contact" class="mt-6 inline-block text-amber-500 hover:text-amber-600 font-medium">İletişime Geç <i class="fas fa-arrow-right ml-2"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="py-16 bg-slate-100">
+        <div class="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-12">
+            <div class="lg:w-1/2">
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-6">Kapsamlı Ürün ve Hizmet Yelpazesi</h2>
+                <p class="text-lg text-gray-700 mb-6">Firmamız, gıda tedariğinden inşaat malzemelerine, otel ekipmanlarından askeri kantin çözümlerine kadar geniş bir yelpazede kurumsal tedarik hizmetleri sunmaktadır. Müşterilerimizin ihtiyaçlarını tek noktadan karşılayarak, yüksek kalite standartları ve zamanında teslimat ilkesiyle hareket ediyoruz.</p>
+                <p class="text-lg text-gray-700 mb-6">Güçlü lojistik altyapımız ve deneyimli ekibimizle, iş ortaklarımıza sürdürülebilir çözümler sağlamayı hedefliyoruz. İş süreçlerimizi şeffaflık ve güven üzerine kurarak uzun vadeli iş birlikleri inşa ediyoruz. Müşteri memnuniyetini önceliğimiz olarak görmekle kalmayıp, yenilikçi yaklaşımlarımızla sektörde fark yaratmayı sürdürüyoruz.</p>
+                <a href="#contact" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300">Daha Fazla Bilgi</a>
+            </div>
+            <div class="lg:w-1/2 flex justify-center">
+                <img src="https://placehold.co/600x400/CBD5E1/475569?text=Vivax+Group+Hakkımızda" alt="Vivax Group Hakkımızda" class="rounded-lg shadow-xl w-full max-w-lg">
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-extrabold text-center text-gray-900 mb-12">ÜRÜNLERİMİZ</h2>
+
+            <!-- Product Category Navigation -->
+            <nav class="flex justify-center flex-wrap gap-4 mb-12">
+                <button class="product-category-btn px-6 py-3 rounded-full bg-slate-200 text-slate-800 font-semibold hover:bg-amber-500 hover:text-white transition duration-300 active-category" data-category="all">Tüm Ürünler</button>
+                <button class="product-category-btn px-6 py-3 rounded-full bg-slate-200 text-slate-800 font-semibold hover:bg-amber-500 hover:text-white transition duration-300" data-category="food">Gıda Tedariği</button>
+                <button class="product-category-btn px-6 py-3 rounded-full bg-slate-200 text-slate-800 font-semibold hover:bg-amber-500 hover:text-white transition duration-300" data-category="construction">İnşaat Malzemeleri</button>
+                <button class="product-category-btn px-6 py-3 rounded-full bg-slate-200 text-slate-800 font-semibold hover:bg-amber-500 hover:text-white transition duration-300" data-category="hotel">Otel Ekipmanları</button>
+                <button class="product-category-btn px-6 py-3 rounded-full bg-slate-200 text-slate-800 font-semibold hover:bg-amber-500 hover:text-white transition duration-300" data-category="other">Diğer Ürünler</button>
+            </nav>
+
+            <!-- Product List Container -->
+            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <!-- Products will be dynamically loaded here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 bg-slate-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-extrabold text-center text-gray-900 mb-12">SIKÇA SORULAN SORULAR</h2>
+            <div id="faq-accordion" class="max-w-3xl mx-auto">
+                <!-- FAQ items will be dynamically loaded here by JavaScript -->
+            </div>
+            <div class="text-center mt-8">
+                <a href="#contact" class="inline-block bg-slate-700 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300">Tüm soruları görmek için tıklayın</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-extrabold text-center text-gray-900 mb-12">BİZE ULAŞIN</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Contact Information -->
+                <div class="bg-slate-800 text-white p-8 rounded-lg shadow-xl">
+                    <h3 class="text-3xl font-bold mb-6 border-b-2 border-amber-500 pb-3">İletişim Bilgilerimiz</h3>
+                    <p class="text-lg mb-4">Her türlü bilgi, teklif ya da sipariş talepleriniz için bize aşağıdaki iletişim kanallarımızdan ulaşabilirsiniz.</p>
+
+                    <div class="flex items-center mb-6">
+                        <div class="bg-amber-500 p-4 rounded-full text-2xl mr-4">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div>
+                            <p class="text-xl font-semibold">İletişim Numaramız</p>
+                            <p class="text-lg">+90 0212 216 1234</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center mb-6">
+                        <div class="bg-amber-500 p-4 rounded-full text-2xl mr-4">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <p class="text-xl font-semibold">Mail Adresimiz</p>
+                            <p class="text-lg">info@vivaxgroup.com</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center mb-6">
+                        <div class="bg-amber-500 p-4 rounded-full text-2xl mr-4">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <p class="text-xl font-semibold">Adresimiz</p>
+                            <p class="text-lg">Organize Sanayi Bölgesi, 5. Cadde No:17 Lefkoşa, Kuzey Kıbrıs Türk Cumhuriyeti</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="bg-slate-100 p-8 rounded-lg shadow-xl">
+                    <h3 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-amber-500 pb-3">Bize Mesaj Gönderin</h3>
+                    <p class="text-lg text-gray-700 mb-6">Sorularınız, talepleriniz ya da iş birliği önerileriniz için aşağıdaki formu doldurarak bizimle kolayca iletişime geçebilirsiniz.</p>
+                    <form>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="first-name" class="block text-gray-700 text-sm font-bold mb-2">Ad</label>
+                                <input type="text" id="first-name" name="first-name" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Adınız">
+                            </div>
+                            <div>
+                                <label for="last-name" class="block text-gray-700 text-sm font-bold mb-2">Soyad</label>
+                                <input type="text" id="last-name" name="last-name" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Soyadınız">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="phone" class="block text-gray-700 text-sm font-bold mb-2">Telefon Numarası</label>
+                                <input type="tel" id="phone" name="phone" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Telefon Numaranız">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">E-posta Adresi</label>
+                                <input type="email" id="email" name="email" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="E-posta Adresiniz">
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <label for="subject" class="block text-gray-700 text-sm font-bold mb-2">Konu</label>
+                            <input type="text" id="subject" name="subject" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Konu Başlığı">
+                        </div>
+                        <div class="mb-6">
+                            <label for="message" class="block text-gray-700 text-sm font-bold mb-2">Mesaj</label>
+                            <textarea id="message" name="message" rows="6" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Mesajınızı buraya yazın..."></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-10 rounded-full shadow-lg transition duration-300">Gönder</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Google Maps Placeholder -->
+            <div class="mt-12 rounded-lg overflow-hidden shadow-xl">
+                <img src="https://placehold.co/1200x400/E2E8F0/475569?text=Harita+Konumu" alt="Vivax Group Harita Konumu" class="w-full h-auto object-cover">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="bg-slate-900 text-white py-12">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <!-- Footer Column 1: About Vivax Group -->
+            <div>
+                <h3 class="text-2xl font-bold mb-4">VIVAX GROUP</h3>
+                <p class="text-slate-400 mb-4">Sektörlere özel çözümler, zamanında teslimat, sürdürülebilir iş ortaklığı.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-slate-400 hover:text-amber-500 transition duration-300"><i class="fab fa-facebook-f text-xl"></i></a>
+                    <a href="#" class="text-slate-400 hover:text-amber-500 transition duration-300"><i class="fab fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-slate-400 hover:text-amber-500 transition duration-300"><i class="fab fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-slate-400 hover:text-amber-500 transition duration-300"><i class="fab fa-linkedin-in text-xl"></i></a>
+                </div>
+            </div>
+
+            <!-- Footer Column 2: Kurumsal -->
+            <div>
+                <h3 class="text-xl font-semibold mb-4">KURUMSAL</h3>
+                <ul class="space-y-2">
+                    <li><a href="#about" class="text-slate-400 hover:text-amber-500 transition duration-300">Hakkımızda</a></li>
+                    <li><a href="#" class="text-slate-400 hover:text-amber-500 transition duration-300">Misyon & Vizyon</a></li>
+                    <li><a href="#" class="text-slate-400 hover:text-amber-500 transition duration-300">Değerlerimiz</a></li>
+                    <li><a href="#" class="text-slate-400 hover:text-amber-500 transition duration-300">Kalite Politikamız</a></li>
+                    <li><a href="#" class="text-slate-400 hover:text-amber-500 transition duration-300">Neden Bizi Tercih Etmelisiniz?</a></li>
+                </ul>
+            </div>
+
+            <!-- Footer Column 3: Hızlı Erişim -->
+            <div>
+                <h3 class="text-xl font-semibold mb-4">HIZLI ERİŞİM</h3>
+                <ul class="space-y-2">
+                    <li><a href="#home" class="text-slate-400 hover:text-amber-500 transition duration-300">Ana Sayfa</a></li>
+                    <li><a href="#services" class="text-slate-400 hover:text-amber-500 transition duration-300">Hizmetlerimiz</a></li>
+                    <li><a href="#products" class="text-slate-400 hover:text-amber-500 transition duration-300">Ürünlerimiz</a></li>
+                    <li><a href="#faq" class="text-slate-400 hover:text-amber-500 transition duration-300">S.S.S.</a></li>
+                    <li><a href="#contact" class="text-slate-400 hover:text-amber-500 transition duration-300">İletişim</a></li>
+                </ul>
+            </div>
+
+            <!-- Footer Column 4: Adres -->
+            <div>
+                <h3 class="text-xl font-semibold mb-4">ADRES</h3>
+                <p class="text-slate-400 mb-2">Organize Sanayi Bölgesi, 5. Cadde No:17 Lefkoşa, Kuzey Kıbrıs Türk Cumhuriyeti</p>
+                <p class="text-slate-400 mb-2"><i class="fas fa-phone-alt mr-2"></i>+90 0212 216 1234</p>
+                <p class="text-slate-400"><i class="fas fa-envelope mr-2"></i>info@vivaxgroup.com</p>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 text-center text-slate-500 mt-10 border-t border-slate-700 pt-8">
+            <p>&copy; 2025 Vivax Group. Tüm hakları saklıdır. <a href="#" class="hover:text-amber-500">Gizlilik Politikası</a> | <a href="#" class="hover:text-amber-500">Kullanım Koşulları</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript for Slider Functionality
+        const slides = document.querySelectorAll('.hero-slide');
+        const prevButton = document.querySelector('.prev-slide');
+        const nextButton = document.querySelector('.next-slide');
+        const dotsContainer = document.querySelector('.slider-dots');
+        let currentSlide = 0;
+        let slideInterval;
+
+        // Create dots for each slide
+        slides.forEach((_, index) => {
+            const dot = document.createElement('span');
+            dot.classList.add('dot');
+            if (index === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => goToSlide(index));
+            dotsContainer.appendChild(dot);
+        });
+        const dots = document.querySelectorAll('.dot');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === index) {
+                    slide.classList.add('active');
+                }
+            });
+            dots.forEach((dot, i) => {
+                dot.classList.remove('active');
+                if (i === index) {
+                    dot.classList.add('active');
+                }
+            });
+            currentSlide = index;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function goToSlide(index) {
+            clearInterval(slideInterval); // Stop auto-slide when manual navigation occurs
+            showSlide(index);
+            startAutoSlide(); // Restart auto-slide
+        }
+
+        function startAutoSlide() {
+            slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+        }
+
+        prevButton.addEventListener('click', prevSlide);
+        nextButton.addEventListener('click', nextSlide);
+
+        // Start the automatic slider when the page loads
+        document.addEventListener('DOMContentLoaded', startAutoSlide);
+
+        // JavaScript for Mobile Menu Toggle
+        const hamburgerButton = document.getElementById('hamburger-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        hamburgerButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+
+        // Close mobile menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+        });
+
+        // JavaScript for FAQ Accordion
+        // FAQ data (simulating JSON)
+        const faqData = [
+            {
+                question: "Hangi ürün gruplarında hizmet veriyorsunuz?",
+                answer: "Firmamız, gıda ürünleri, inşaat malzemeleri, otel ekipmanları ve askeri kantin çözümleri olmak üzere dört ana alanda hizmet vermektedir. Geniş ürün yelpazemiz sayesinde müşterilerimizin farklı sektörlerdeki ihtiyaçlarını tek noktadan karşılamaktayız."
+            },
+            {
+                question: "Kıbrıs'ın her bölgesine teslimat yapıyor musunuz?",
+                answer: "Evet, Kıbrıs genelinde tüm bölgelere hizmet sağlıyoruz. Depo ve dağıtım altyapımızı bu kapsamda organize ettik. İster Lefkoşa'da ister Girne, Mağusa ya da Güzelyurt'ta olun; siparişlerinizi güvenli, hızlı ve planlı bir şekilde adresinize ulaştırıyoruz."
+            },
+            {
+                question: "Minimum sipariş miktarı var mı?",
+                answer: "Genel olarak toptan ve kurumsal odaklı çalıştığımız için bazı ürün gruplarında minimum sipariş miktarları vardır. Ancak her müşteri ve sektör farklı ihtiyaçlara sahip olduğundan, esnek bir yaklaşım benimsiyoruz. Bu konuda doğrudan bizimle iletişime geçmeniz yeterlidir."
+            },
+            {
+                question: "Ürünlerinizin kalitesi ve sertifikasyon durumu nedir?",
+                answer: "Tedarik ettiğimiz ürünler, kalite kontrol süreçlerinden geçerek ulusal ve uluslararası standartlara uygun sertifikalı markalardan temin edilmektedir. Uzun vadeli müşteri memnuniyeti için sadece güvenilir üreticilerle çalışıyoruz."
+            },
+            {
+                question: "Sipariş süreci nasıl işliyor?",
+                answer: "İlk olarak müşterilerimizin ihtiyaçlarını detaylı bir şekilde analiz ediyor, ardından ürün seçimi, fiyatlandırma ve teslimat planlamasını birlikte yapıyoruz. Onaylanan siparişler, lojistik ekibimiz tarafından belirlenen takvim doğrultusunda eksiksiz şekilde hazırlanıp teslim edilir. Tüm süreç boyunca müşteri temsilcilerimiz bilgilendirme ve destek sağlamaya devam eder."
+            },
+            {
+                question: "Kıbrıs dışına hizmet veriyor musunuz?",
+                answer: "Şu anda öncelikli hizmet bölgemiz Kuzey Kıbrıs Türk Cumhuriyeti'dir. Ancak belirli projelerde, özel anlaşmalar ve organizasyonlar kapsamında Kıbrıs dışına da lojistik destek ve ürün tedariği sağlayabiliyoruz. Detaylı bilgi için bizimle doğrudan iletişime geçmeniz yeterlidir."
+            },
+            {
+                question: "Ürünleriniz garantili mi?",
+                answer: "Evet, tedarik ettiğimiz tüm ürünler üretici veya distribütör garantisi altındadır. Özellikle teknik ekipmanlar, mutfak cihazları ve inşaat malzemelerinde garanti süreci titizlikle yürütülür. Ayrıca satış sonrası destek ekibimiz, oluşabilecek sorunlarda hızlı çözüm üretmek için daima hazırdır."
+            }
+        ];
+
+        const faqAccordion = document.getElementById('faq-accordion');
+
+        function renderFaq() {
+            faqAccordion.innerHTML = ''; // Clear existing content
+            faqData.forEach((item, index) => {
+                const faqItem = document.createElement('div');
+                faqItem.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'mb-4', 'overflow-hidden');
+
+                faqItem.innerHTML = `
+                    <div class="accordion-header p-6 flex justify-between items-center text-lg font-semibold text-gray-800">
+                        <span>${item.question}</span>
+                        <i class="fas fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                    </div>
+                    <div class="accordion-content px-6 pb-6 text-gray-600">
+                        <p>${item.answer}</p>
+                    </div>
+                `;
+                faqAccordion.appendChild(faqItem);
+
+                const header = faqItem.querySelector('.accordion-header');
+                const content = faqItem.querySelector('.accordion-content');
+                const icon = header.querySelector('i');
+
+                header.addEventListener('click', () => {
+                    // Close all other open accordions
+                    document.querySelectorAll('.accordion-content.active').forEach(openContent => {
+                        if (openContent !== content) {
+                            openContent.classList.remove('active');
+                            openContent.previousElementSibling.querySelector('i').classList.remove('rotate-180');
+                        }
+                    });
+
+                    content.classList.toggle('active');
+                    icon.classList.toggle('rotate-180');
+                });
+            });
+        }
+
+        // JavaScript for Dynamic Product Loading
+        // Product data (simulating JSON structure)
+        const productsData = [
+            // Gıda Tedariği
+            { id: 1, name: "Aydı Zeytin", category: "food", subcategory: "zeytin", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Aydı+Zeytin" },
+            { id: 2, name: "Aydın Zeytinyağı", category: "food", subcategory: "zeytinyagi", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Aydın+Zeytinyağı" },
+            { id: 3, name: "Badem Pınarı Su", category: "food", subcategory: "su", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Badem+Pınarı+Su" },
+            { id: 4, name: "Ben Organic", category: "food", subcategory: "organik", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Ben+Organic" },
+            { id: 5, name: "Beşler Sucuk", category: "food", subcategory: "et-urunleri", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Beşler+Sucuk" },
+            { id: 6, name: "Emektar Türk Kahvesi", category: "food", subcategory: "kahve", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Emektar+Kahve" },
+            { id: 7, name: "Gedik Piliç", category: "food", subcategory: "tavuk", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Gedik+Piliç" },
+            { id: 8, name: "Kaanlar Gıda", category: "food", subcategory: "gida", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Kaanlar+Gıda" },
+
+            // İnşaat Malzemeleri (Placeholder products)
+            { id: 9, name: "Çimento", category: "construction", subcategory: "temel", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Çimento" },
+            { id: 10, name: "Demir Çubuklar", category: "construction", subcategory: "temel", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Demir+Çubuklar" },
+            { id: 11, name: "Tuğla", category: "construction", subcategory: "duvar", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Tuğla" },
+            { id: 12, name: "İzolasyon Malzemeleri", category: "construction", subcategory: "yalıtım", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=İzolasyon" },
+
+            // Otel Ekipmanları (Placeholder products)
+            { id: 13, name: "Oda İçi Ekipmanlar", category: "hotel", subcategory: "oda", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Oda+Ekipmanları" },
+            { id: 14, name: "Banyo Ekipmanları", category: "hotel", subcategory: "banyo", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Banyo+Ekipmanları" },
+            { id: 15, name: "Mutfak Ekipmanları", category: "hotel", subcategory: "mutfak", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Mutfak+Ekipmanları" },
+            { id: 16, name: "Servis Ekipmanları", category: "hotel", subcategory: "servis", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Servis+Ekipmanları" },
+
+            // Diğer Ürünler (Placeholder products)
+            { id: 17, name: "Aeron Home Perfumes", category: "other", subcategory: "parfum", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Aeron+Parfüm" },
+            { id: 18, name: "Mage Cosmetics Sabunları", category: "other", subcategory: "kozmetik", image: "https://placehold.co/300x200/F8FAFC/0F172A?text=Mage+Sabun" }
+        ];
+
+        const productListContainer = document.getElementById('product-list');
+        const categoryButtons = document.querySelectorAll('.product-category-btn');
+
+        function renderProducts(category = 'all') {
+            productListContainer.innerHTML = ''; // Clear existing products
+            const filteredProducts = category === 'all' ? productsData : productsData.filter(p => p.category === category);
+
+            if (filteredProducts.length === 0) {
+                productListContainer.innerHTML = '<p class="text-center text-gray-600 col-span-full">Bu kategoriye ait ürün bulunmamaktadır.</p>';
+                return;
+            }
+
+            filteredProducts.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'overflow-hidden', 'transform', 'hover:scale-105', 'transition', 'duration-300');
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">${product.name}</h3>
+                        <p class="text-gray-600 text-sm mb-4">${product.category === 'food' ? 'Gıda' : product.category === 'construction' ? 'İnşaat' : product.category === 'hotel' ? 'Otel' : 'Diğer'} Ürünü</p>
+                        <a href="#" class="inline-block text-amber-500 hover:text-amber-600 font-medium">İncele <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                `;
+                productListContainer.appendChild(productCard);
+            });
+        }
+
+        // Event Listeners for category buttons
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                categoryButtons.forEach(btn => btn.classList.remove('active-category', 'bg-amber-500', 'text-white'));
+                // Add active class to clicked button
+                button.classList.add('active-category', 'bg-amber-500', 'text-white');
+                renderProducts(button.dataset.category);
+            });
+        });
+
+        // Initial render on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFaq();
+            renderProducts('all'); // Load all products by default
+            // Set the initial active category button style
+            document.querySelector('.product-category-btn[data-category="all"]').classList.add('bg-amber-500', 'text-white');
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
